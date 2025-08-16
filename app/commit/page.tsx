@@ -22,6 +22,7 @@ import { useAccount } from 'wagmi';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { useCommitToBounties, useGetCommitment } from '@/lib/useBribehack';
 
 const CommitPage = () => {
   // State for form inputs
@@ -34,6 +35,10 @@ const CommitPage = () => {
   const { address } = useAccount();
   const { user } = useDynamicContext();
   const isConnected = !!user && !!address;
+  
+  // Contract hooks
+  const { commitToBounties, isPending: isCommitting, isConfirming, isConfirmed, error } = useCommitToBounties();
+  const { data: existingCommitment } = useGetCommitment(address);
 
   /**
    * Handle bounty selection toggle
@@ -57,7 +62,7 @@ const CommitPage = () => {
 
   /**
    * Handle form submission
-   * In production, this would call the smart contract
+   * Calls the smart contract to commit to bounties
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,39 +77,40 @@ const CommitPage = () => {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      // Mock contract call
-      // In production: await contract.commitToBounties(selectedBounties, ensName, ipfsHash)
-      console.log('Committing to bounties:', {
-        committer: address,
+      console.log('Submitting commitment:', {
         bounties: selectedBounties,
-        ens: ensName || null,
-        ideaIpfs: ipfsHash || null,
-        timestamp: new Date().toISOString()
+        ens: ensName || '',
+        ipfsHash: ipfsHash || ''
       });
       
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call the smart contract
+      await commitToBounties(selectedBounties, ensName, ipfsHash);
       
-      toast.success(
-        `Successfully committed to ${selectedBounties.length} ${
-          selectedBounties.length === 1 ? 'bounty' : 'bounties'
-        }!`
-      );
-      
-      // Reset form
-      setSelectedBounties([]);
-      setEnsName('');
-      setIpfsHash('');
     } catch (error) {
       console.error('Commit error:', error);
       toast.error('Failed to commit. Please try again.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
+  
+  // Handle successful transaction
+  if (isConfirmed) {
+    toast.success(
+      `Successfully committed to ${selectedBounties.length} ${
+        selectedBounties.length === 1 ? 'bounty' : 'bounties'
+      }!`
+    );
+    
+    // Reset form
+    setSelectedBounties([]);
+    setEnsName('');
+    setIpfsHash('');
+  }
+  
+  // Handle transaction errors
+  if (error) {
+    toast.error('Transaction failed. Please try again.');
+  }
 
   return (
     <motion.div 
@@ -231,13 +237,15 @@ const CommitPage = () => {
         <button 
           type="submit" 
           className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed" 
-          disabled={!isConnected || isSubmitting || selectedBounties.length === 0}
+          disabled={!isConnected || isCommitting || isConfirming || selectedBounties.length === 0}
         >
           {!isConnected 
             ? 'Connect Wallet to Commit' 
-            : isSubmitting 
+            : isCommitting 
               ? 'Submitting Transaction...' 
-              : `Commit to ${selectedBounties.length || 0} ${selectedBounties.length === 1 ? 'Bounty' : 'Bounties'}`}
+              : isConfirming
+                ? 'Confirming Transaction...'
+                : `Commit to ${selectedBounties.length || 0} ${selectedBounties.length === 1 ? 'Bounty' : 'Bounties'}`}
         </button>
       </form>
       
