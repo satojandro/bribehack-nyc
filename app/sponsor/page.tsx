@@ -19,24 +19,40 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { isAddress } from 'viem';
+import { useSponsorBounty, useBribeHacker } from '@/lib/useBribehack';
 
 const SponsorPage = () => {
   // State for sponsor bounty form
   const [selectedBounty, setSelectedBounty] = useState('');
   const [sponsorAmount, setSponsorAmount] = useState('');
-  const [isSponsorSubmitting, setIsSponsorSubmitting] = useState(false);
   
   // State for bribe form
   const [bribeAddress, setBribeAddress] = useState('');
   const [bribeAmount, setBribeAmount] = useState('');
   const [bribeMessage, setBribeMessage] = useState('');
   const [targetBounty, setTargetBounty] = useState('');
-  const [isBribeSubmitting, setIsBribeSubmitting] = useState(false);
   
   // Get wallet connection status
   const { address } = useAccount();
   const { user } = useDynamicContext();
   const isConnected = !!user && !!address;
+
+  // Contract hooks
+  const { 
+    sponsorBounty, 
+    isPending: isSponsorPending, 
+    isConfirming: isSponsorConfirming, 
+    isConfirmed: isSponsorConfirmed,
+    error: sponsorError 
+  } = useSponsorBounty();
+  
+  const { 
+    bribeHacker, 
+    isPending: isBribePending, 
+    isConfirming: isBribeConfirming, 
+    isConfirmed: isBribeConfirmed,
+    error: bribeError 
+  } = useBribeHacker();
 
   /**
    * Handle sponsor bounty submission
@@ -61,34 +77,36 @@ const SponsorPage = () => {
       return;
     }
     
-    setIsSponsorSubmitting(true);
-    
     try {
-      // Mock contract call
-      // In production: await contract.sponsorBounty(selectedBounty, { value: parseEther(sponsorAmount) })
       console.log('Sponsoring bounty:', {
         sponsor: address,
         bounty: selectedBounty,
-        amount: sponsorAmount,
-        timestamp: new Date().toISOString()
+        amount: sponsorAmount
       });
       
-      // Simulate transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call the smart contract
+      await sponsorBounty(selectedBounty, sponsorAmount);
       
-      const bounty = bounties.find(b => b.id === selectedBounty);
-      toast.success(`Successfully sponsored ${bounty?.title} with ${sponsorAmount} ETH!`);
-      
-      // Reset form
-      setSelectedBounty('');
-      setSponsorAmount('');
     } catch (error) {
       console.error('Sponsor error:', error);
       toast.error('Transaction failed. Please try again.');
-    } finally {
-      setIsSponsorSubmitting(false);
     }
   };
+  
+  // Handle successful sponsor transaction
+  if (isSponsorConfirmed) {
+    const bounty = bounties.find(b => b.id === selectedBounty);
+    toast.success(`Successfully sponsored ${bounty?.title} with ${sponsorAmount} ETH!`);
+    
+    // Reset form
+    setSelectedBounty('');
+    setSponsorAmount('');
+  }
+  
+  // Handle sponsor errors
+  if (sponsorError) {
+    toast.error('Sponsor transaction failed. Please try again.');
+  }
   
   /**
    * Handle bribe submission
@@ -126,37 +144,39 @@ const SponsorPage = () => {
       return;
     }
     
-    setIsBribeSubmitting(true);
-    
     try {
-      // Mock contract call
-      // In production: await contract.bribeHacker(bribeAddress, targetBounty, bribeMessage, { value: parseEther(bribeAmount) })
       console.log('Sending bribe:', {
         from: address,
         to: bribeAddress,
         amount: bribeAmount,
         targetBounty: targetBounty,
-        message: bribeMessage || null,
-        timestamp: new Date().toISOString()
+        message: bribeMessage || null
       });
       
-      // Simulate transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call the smart contract
+      await bribeHacker(bribeAddress as `0x${string}`, targetBounty, bribeAmount);
       
-      toast.success(`Successfully bribed ${bribeAddress} with ${bribeAmount} ETH!`);
-      
-      // Reset form
-      setBribeAddress('');
-      setBribeAmount('');
-      setBribeMessage('');
-      setTargetBounty('');
     } catch (error) {
       console.error('Bribe error:', error);
       toast.error('Transaction failed. Please try again.');
-    } finally {
-      setIsBribeSubmitting(false);
     }
   };
+  
+  // Handle successful bribe transaction
+  if (isBribeConfirmed) {
+    toast.success(`Successfully bribed ${bribeAddress} with ${bribeAmount} ETH!`);
+    
+    // Reset form
+    setBribeAddress('');
+    setBribeAmount('');
+    setBribeMessage('');
+    setTargetBounty('');
+  }
+  
+  // Handle bribe errors
+  if (bribeError) {
+    toast.error('Bribe transaction failed. Please try again.');
+  }
 
   return (
     <motion.div 
@@ -185,7 +205,7 @@ const SponsorPage = () => {
               value={selectedBounty}
               onChange={(e) => setSelectedBounty(e.target.value)}
               className="w-full"
-              disabled={isSponsorSubmitting}
+              disabled={isSponsorPending || isSponsorConfirming}
             >
               <option value="" disabled>Choose a bounty...</option>
               {bounties.map(bounty => (
@@ -231,7 +251,7 @@ const SponsorPage = () => {
               onChange={(e) => setSponsorAmount(e.target.value)}
               placeholder="0.1"
               className="w-full"
-              disabled={isSponsorSubmitting}
+              disabled={isSponsorPending || isSponsorConfirming}
             />
           </div>
           
@@ -239,13 +259,15 @@ const SponsorPage = () => {
           <button 
             type="submit" 
             className="btn btn-secondary w-full disabled:opacity-50" 
-            disabled={!isConnected || isSponsorSubmitting}
+            disabled={!isConnected || isSponsorPending || isSponsorConfirming}
           >
             {!isConnected 
               ? 'Connect Wallet to Sponsor' 
-              : isSponsorSubmitting
-                ? 'Processing Transaction...'
-                : 'Sponsor Bounty'}
+              : isSponsorPending
+                ? 'Submitting Transaction...'
+                : isSponsorConfirming
+                  ? 'Confirming Transaction...'
+                  : 'Sponsor Bounty'}
           </button>
         </form>
       </div>
@@ -272,7 +294,7 @@ const SponsorPage = () => {
               onChange={(e) => setBribeAddress(e.target.value)}
               placeholder="vitalik.eth or 0x..."
               className="w-full font-mono text-sm"
-              disabled={isBribeSubmitting}
+              disabled={isBribePending || isBribeConfirming}
             />
           </div>
           
@@ -289,7 +311,7 @@ const SponsorPage = () => {
               value={targetBounty}
               onChange={(e) => setTargetBounty(e.target.value)}
               className="w-full"
-              disabled={isBribeSubmitting}
+              disabled={isBribePending || isBribeConfirming}
             >
               <option value="" disabled>Select target bounty...</option>
               {bounties.map(bounty => (
@@ -317,7 +339,7 @@ const SponsorPage = () => {
               onChange={(e) => setBribeAmount(e.target.value)}
               placeholder="0.05"
               className="w-full"
-              disabled={isBribeSubmitting}
+              disabled={isBribePending || isBribeConfirming}
             />
           </div>
           
@@ -336,7 +358,7 @@ const SponsorPage = () => {
               placeholder="Join us on this bounty! We have cookies..."
               className="w-full h-20 resize-none"
               maxLength={200}
-              disabled={isBribeSubmitting}
+              disabled={isBribePending || isBribeConfirming}
             />
             <p className="text-xs text-gray-500 mt-1">
               {bribeMessage.length}/200 characters
@@ -347,13 +369,15 @@ const SponsorPage = () => {
           <button 
             type="submit" 
             className="btn btn-primary w-full disabled:opacity-50" 
-            disabled={!isConnected || isBribeSubmitting}
+            disabled={!isConnected || isBribePending || isBribeConfirming}
           >
             {!isConnected 
               ? 'Connect Wallet to Bribe' 
-              : isBribeSubmitting
-                ? 'Processing Transaction...'
-                : 'Send Bribe'}
+              : isBribePending
+                ? 'Submitting Transaction...'
+                : isBribeConfirming
+                  ? 'Confirming Transaction...'
+                  : 'Send Bribe'}
           </button>
         </form>
       </div>

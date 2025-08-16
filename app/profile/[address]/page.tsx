@@ -24,6 +24,7 @@ import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import { isAddress } from 'viem';
 import { mainnet } from 'viem/chains';
+import { useGetCommitment, useGetBribes } from '@/lib/useBribehack';
 
 const ProfilePage = () => {
   const params = useParams();
@@ -50,10 +51,40 @@ const ProfilePage = () => {
     chainId: mainnet.id,
   });
 
-  // Get profile data (mocked for now)
+  // Get real contract data
+  const { data: commitment, isLoading: commitmentLoading } = useGetCommitment(address);
+  const { data: bribes, isLoading: bribesLoading } = useGetBribes(address);
+
+  // Fallback to mock data if no contract data
   const profile: HackerProfile = address && mockProfileData[address] 
     ? mockProfileData[address] 
     : { commits: [], bribes: [], totalEarned: 0, reputation: 0 };
+
+  // Process contract data if available
+  const realCommits = commitment ? [{
+    bountyId: 'contract-commitment',
+    bountyTitle: `Committed to ${commitment.bountyIds?.length || 0} bounties`,
+    date: new Date(Number(commitment.timestamp) * 1000).toISOString(),
+    ipfsHash: commitment.ipfsHash || undefined
+  }] : [];
+
+  const realBribes = bribes ? bribes.map((bribe, index) => ({
+    id: index,
+    from: bribe.briber,
+    amount: Number(bribe.amount) / 1e18, // Convert from wei to ETH
+    targetBountyTitle: bribe.bountyId,
+    message: '',
+    status: 'pending' as const,
+    date: new Date(Number(bribe.timestamp) * 1000).toISOString()
+  })) : [];
+
+  // Use real data if available, otherwise fallback to mock
+  const displayProfile = {
+    commits: realCommits.length > 0 ? realCommits : profile.commits,
+    bribes: realBribes.length > 0 ? realBribes : profile.bribes,
+    totalEarned: realBribes.reduce((sum, b) => sum + b.amount, 0) || profile.totalEarned,
+    reputation: profile.reputation // Keep mock reputation for now
+  };
 
   /**
    * Handle bribe response (accept/decline)
@@ -122,15 +153,19 @@ const ProfilePage = () => {
         <div className="flex gap-6 mt-4">
           <div>
             <p className="text-xs text-gray-400">Reputation</p>
-            <p className="text-xl font-bold text-primary">{profile.reputation}/100</p>
+            <p className="text-xl font-bold text-primary">{displayProfile.reputation}/100</p>
           </div>
           <div>
             <p className="text-xs text-gray-400">Total Earned</p>
-            <p className="text-xl font-bold text-secondary">{profile.totalEarned} ETH</p>
+            <p className="text-xl font-bold text-secondary">{displayProfile.totalEarned.toFixed(4)} ETH</p>
           </div>
           <div>
             <p className="text-xs text-gray-400">Commits</p>
-            <p className="text-xl font-bold text-gray-200">{profile.commits.length}</p>
+            <p className="text-xl font-bold text-gray-200">{displayProfile.commits.length}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400">Bribes</p>
+            <p className="text-xl font-bold text-accent">{displayProfile.bribes.length}</p>
           </div>
         </div>
       </div>
@@ -141,12 +176,13 @@ const ProfilePage = () => {
           <h2 className="text-2xl font-semibold mb-4 text-primary">
             Commits Made
             <span className="text-xs text-gray-500 ml-2">
-              ({profile.commits.length} total)
+              ({displayProfile.commits.length} total)
+              {commitmentLoading && ' - Loading...'}
             </span>
           </h2>
           <div className="space-y-4">
-            {profile.commits.length > 0 ? (
-              profile.commits.map((commit, index) => (
+            {displayProfile.commits.length > 0 ? (
+              displayProfile.commits.map((commit, index) => (
                 <motion.div 
                   key={`${commit.bountyId}-${index}`} 
                   className="card p-4"
@@ -177,12 +213,13 @@ const ProfilePage = () => {
           <h2 className="text-2xl font-semibold mb-4 text-secondary">
             Bribes Received
             <span className="text-xs text-gray-500 ml-2">
-              ({profile.bribes.length} total)
+              ({displayProfile.bribes.length} total)
+              {bribesLoading && ' - Loading...'}
             </span>
           </h2>
           <div className="space-y-4">
-            {profile.bribes.length > 0 ? (
-              profile.bribes.map((bribe, index) => {
+            {displayProfile.bribes.length > 0 ? (
+              displayProfile.bribes.map((bribe, index) => {
                 const isProcessing = processingBribes.has(bribe.id);
                 
                 return (
@@ -268,23 +305,23 @@ const ProfilePage = () => {
           <div>
             <p className="text-gray-500">Acceptance Rate</p>
             <p className="text-lg font-bold text-gray-200">
-              {profile.bribes.length > 0 
-                ? Math.round((profile.bribes.filter(b => b.status === 'accepted').length / profile.bribes.length) * 100)
+              {displayProfile.bribes.length > 0 
+                ? Math.round((displayProfile.bribes.filter(b => b.status === 'accepted').length / displayProfile.bribes.length) * 100)
                 : 0}%
             </p>
           </div>
           <div>
             <p className="text-gray-500">Avg Bribe</p>
             <p className="text-lg font-bold text-gray-200">
-              {profile.bribes.length > 0
-                ? (profile.bribes.reduce((sum, b) => sum + b.amount, 0) / profile.bribes.length).toFixed(2)
+              {displayProfile.bribes.length > 0
+                ? (displayProfile.bribes.reduce((sum, b) => sum + b.amount, 0) / displayProfile.bribes.length).toFixed(4)
                 : '0'} ETH
             </p>
           </div>
           <div>
             <p className="text-gray-500">Active Bounties</p>
             <p className="text-lg font-bold text-gray-200">
-              {profile.commits.filter(c => {
+              {displayProfile.commits.filter(c => {
                 // In production, would check if bounty is still active
                 return true;
               }).length}
