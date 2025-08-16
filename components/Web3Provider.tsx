@@ -85,6 +85,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             {
               blockExplorerUrls: ['https://sepolia.etherscan.io'],
               chainId: 11155111,
+              networkId: 11155111,
               name: 'Sepolia',
               rpcUrls: ['https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
@@ -98,6 +99,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             {
               blockExplorerUrls: ['https://sepolia.basescan.org'],
               chainId: 84532,
+              networkId: 84532,
               name: 'Base Sepolia',
               rpcUrls: ['https://sepolia.base.org'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_base.jpg'],
@@ -111,6 +113,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             {
               blockExplorerUrls: ['https://etherscan.io'],
               chainId: 1,
+              networkId: 1,
               name: 'Ethereum',
               rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
@@ -124,6 +127,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             {
               blockExplorerUrls: ['https://basescan.org'],
               chainId: 8453,
+              networkId: 8453,
               name: 'Base',
               rpcUrls: ['https://mainnet.base.org'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_base.jpg'],
@@ -135,9 +139,6 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             },
           ]
         },
-        
-        // Set Sepolia as default for hackathon development
-        initialChain: 'Sepolia',
         
         // Theme configuration to match our dark theme
         cssOverrides: `
