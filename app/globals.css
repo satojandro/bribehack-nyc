@@ -1,0 +1,43 @@
+/* Import Google Fonts for Inter and Roboto Mono */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* Tailwind CSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Base Layer Styles */
+@layer base {
+  /* Body styling - dark background with gray text */
+  body {
+    @apply bg-background text-gray-200 antialiased;
+  }
+  
+  /* Form input styling - consistent dark theme inputs */
+  input, select, textarea {
+    @apply bg-gray-dark border border-gray-medium rounded-md px-4 py-2 
+           focus:outline-none focus:ring-2 focus:ring-primary 
+           transition-all duration-200;
+  }
+
+  /* Base button styling */
+  .btn {
+    @apply px-6 py-2 rounded-md font-semibold 
+           transition-all duration-200 ease-in-out;
+  }
+
+  /* Primary button - purple with glow effect */
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-purple-500 shadow-glow-primary;
+  }
+  
+  /* Secondary button - neon green with glow effect */
+  .btn-secondary {
+    @apply bg-secondary text-black hover:bg-green-300 shadow-glow-secondary;
+  }
+
+  /* Card component - dark background with border */
+  .card {
+    @apply bg-gray-dark border border-gray-medium rounded-lg p-6;
+  }
+}
