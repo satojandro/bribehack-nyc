@@ -27,6 +27,7 @@ import {
   optimism,
   arbitrum,
   base,
+  baseSepolia,
   sepolia,
 } from 'viem/chains';
 
@@ -39,10 +40,10 @@ const queryClient = new QueryClient();
 /**
  * Wagmi configuration
  * Sets up the chains and transports for blockchain interactions
- * Includes mainnet and popular L2s for cross-chain support
+ * Includes mainnet, testnets (Sepolia, Base Sepolia), and popular L2s for cross-chain support
  */
 const wagmiConfig = createConfig({
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+  chains: [mainnet, polygon, optimism, arbitrum, base, baseSepolia, sepolia],
   multiInjectedProviderDiscovery: false,
   transports: {
     [mainnet.id]: http(),
@@ -50,6 +51,7 @@ const wagmiConfig = createConfig({
     [optimism.id]: http(),
     [arbitrum.id]: http(),
     [base.id]: http(),
+    [baseSepolia.id]: http(),
     [sepolia.id]: http(),
   },
 });
@@ -75,6 +77,67 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
         // App info displayed in wallet connection modal
         appName: 'Bribehack',
         appLogoUrl: '/logo.png', // Add your logo to public folder
+        
+        // Explicit network configuration for testnet support
+        overrides: {
+          evmNetworks: [
+            // Sepolia Testnet - Primary deployment target for hackathon
+            {
+              blockExplorerUrls: ['https://sepolia.etherscan.io'],
+              chainId: 11155111,
+              name: 'Sepolia',
+              rpcUrls: ['https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+              iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
+              nativeCurrency: {
+                name: 'Sepolia Ether',
+                symbol: 'ETH',
+                decimals: 18,
+              },
+            },
+            // Base Sepolia Testnet - Secondary deployment target
+            {
+              blockExplorerUrls: ['https://sepolia.basescan.org'],
+              chainId: 84532,
+              name: 'Base Sepolia',
+              rpcUrls: ['https://sepolia.base.org'],
+              iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_base.jpg'],
+              nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18,
+              },
+            },
+            // Ethereum Mainnet - For production deployment
+            {
+              blockExplorerUrls: ['https://etherscan.io'],
+              chainId: 1,
+              name: 'Ethereum',
+              rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+              iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
+              nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18,
+              },
+            },
+            // Base Mainnet - For production L2 deployment
+            {
+              blockExplorerUrls: ['https://basescan.org'],
+              chainId: 8453,
+              name: 'Base',
+              rpcUrls: ['https://mainnet.base.org'],
+              iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_base.jpg'],
+              nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18,
+              },
+            },
+          ]
+        },
+        
+        // Set Sepolia as default for hackathon development
+        initialChain: 'Sepolia',
         
         // Theme configuration to match our dark theme
         cssOverrides: `
