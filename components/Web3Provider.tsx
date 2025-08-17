@@ -87,7 +87,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
               chainId: 11155111,
               networkId: 11155111,
               name: 'Sepolia',
-              rpcUrls: ['https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+              rpcUrls: [process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
               nativeCurrency: {
                 name: 'Sepolia Ether',
@@ -115,7 +115,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
               chainId: 1,
               networkId: 1,
               name: 'Ethereum',
-              rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+              rpcUrls: [process.env.NEXT_PUBLIC_MAINNET_RPC_URL || 'https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID'],
               iconUrls: ['https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'],
               nativeCurrency: {
                 name: 'Ether',

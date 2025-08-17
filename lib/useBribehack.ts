@@ -12,6 +12,7 @@ import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 
 import { useAccount, useChainId } from 'wagmi';
 import { parseEther } from 'viem';
 import { toast } from 'react-hot-toast';
+import { useMemo } from 'react';
 import { BRIBEHACK_ABI } from './bribehack-abi';
 import { getContractAddressByChainId } from './contracts';
 
@@ -21,13 +22,15 @@ import { getContractAddressByChainId } from './contracts';
 export function useBribehackContract() {
   const chainId = useChainId();
   
-  try {
-    const address = getContractAddressByChainId(chainId, 'bribehack');
-    return { address: address as `0x${string}`, abi: BRIBEHACK_ABI };
-  } catch (error) {
-    console.warn(`Bribehack not deployed on chain ${chainId}`);
-    return { address: undefined, abi: BRIBEHACK_ABI };
-  }
+  return useMemo(() => {
+    try {
+      const address = getContractAddressByChainId(chainId, 'bribehack');
+      return { address: address as `0x${string}`, abi: BRIBEHACK_ABI };
+    } catch (error) {
+      console.warn(`Bribehack not deployed on chain ${chainId}`);
+      return { address: undefined, abi: BRIBEHACK_ABI };
+    }
+  }, [chainId]);
 }
 
 /**

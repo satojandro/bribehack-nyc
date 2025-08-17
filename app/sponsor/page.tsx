@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { bounties } from '@/lib/mockData';
 import { useAccount } from 'wagmi';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
@@ -96,19 +96,23 @@ const SponsorPage = () => {
   };
   
   // Handle successful sponsor transaction
-  if (isSponsorConfirmed) {
-    const bounty = bounties.find(b => b.id === selectedBounty);
-    toast.success(`Successfully sponsored ${bounty?.title} with ${sponsorAmount} ETH!`);
-    
-    // Reset form
-    setSelectedBounty('');
-    setSponsorAmount('');
-  }
+  useEffect(() => {
+    if (isSponsorConfirmed) {
+      const bounty = bounties.find(b => b.id === selectedBounty);
+      toast.success(`Successfully sponsored ${bounty?.title} with ${sponsorAmount} ETH!`);
+      
+      // Reset form
+      setSelectedBounty('');
+      setSponsorAmount('');
+    }
+  }, [isSponsorConfirmed, selectedBounty, sponsorAmount]);
   
   // Handle sponsor errors
-  if (sponsorError) {
-    toast.error('Sponsor transaction failed. Please try again.');
-  }
+  useEffect(() => {
+    if (sponsorError) {
+      toast.error('Sponsor transaction failed. Please try again.');
+    }
+  }, [sponsorError]);
   
   /**
    * Handle bribe submission
@@ -165,20 +169,24 @@ const SponsorPage = () => {
   };
   
   // Handle successful bribe transaction
-  if (isBribeConfirmed) {
-    toast.success(`Successfully bribed ${bribeAddress} with ${bribeAmount} ETH!`);
-    
-    // Reset form
-    setBribeAddress('');
-    setBribeAmount('');
-    setBribeMessage('');
-    setTargetBounty('');
-  }
+  useEffect(() => {
+    if (isBribeConfirmed) {
+      toast.success(`Successfully bribed ${bribeAddress} with ${bribeAmount} ETH!`);
+      
+      // Reset form
+      setBribeAddress('');
+      setBribeAmount('');
+      setBribeMessage('');
+      setTargetBounty('');
+    }
+  }, [isBribeConfirmed, bribeAddress, bribeAmount]);
   
   // Handle bribe errors
-  if (bribeError) {
-    toast.error('Bribe transaction failed. Please try again.');
-  }
+  useEffect(() => {
+    if (bribeError) {
+      toast.error('Bribe transaction failed. Please try again.');
+    }
+  }, [bribeError]);
 
   return (
     <motion.div 

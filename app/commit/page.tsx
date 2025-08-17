@@ -16,7 +16,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { bounties } from '@/lib/mockData';
 import { useAccount } from 'wagmi';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
@@ -99,23 +99,27 @@ const CommitPage = () => {
   };
   
   // Handle successful transaction
-  if (isConfirmed) {
-    toast.success(
-      `Successfully committed to ${selectedBounties.length} ${
-        selectedBounties.length === 1 ? 'bounty' : 'bounties'
-      }!`
-    );
-    
-    // Reset form
-    setSelectedBounties([]);
-    setEnsName('');
-    setIpfsHash('');
-  }
+  useEffect(() => {
+    if (isConfirmed) {
+      toast.success(
+        `Successfully committed to ${selectedBounties.length} ${
+          selectedBounties.length === 1 ? 'bounty' : 'bounties'
+        }!`
+      );
+      
+      // Reset form
+      setSelectedBounties([]);
+      setEnsName('');
+      setIpfsHash('');
+    }
+  }, [isConfirmed, selectedBounties.length]);
   
   // Handle transaction errors
-  if (error) {
-    toast.error('Transaction failed. Please try again.');
-  }
+  useEffect(() => {
+    if (error) {
+      toast.error('Transaction failed. Please try again.');
+    }
+  }, [error]);
 
   return (
     <motion.div 
