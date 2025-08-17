@@ -1,0 +1,53 @@
+{
+  "entityId": "0x198b671a48d0d788912",
+  "publishedAt": "2025-08-17T05:12:38.776Z",
+  "stats": {
+    "totalPrizes": 61,
+    "totalAmount": 264999,
+    "categoryCounts": {
+      "Infrastructure": 2,
+      "Platform": 4,
+      "Layer 2": 2,
+      "Oracle": 2,
+      "AI & Agents": 14,
+      "General": 14,
+      "Security": 4,
+      "Identity": 3,
+      "DeFi": 1,
+      "Developer Tools": 6,
+      "Data": 3,
+      "Wallet": 6
+    },
+    "sponsorCounts": {
+      "LayerZero": 2,
+      "Flow": 3,
+      "Coinbase Developer Platform": 1,
+      "Zircuit": 2,
+      "Chainlink": 2,
+      "Flare Network": 2,
+      "Hedera": 3,
+      "Ledger": 3,
+      "Circle": 4,
+      "ENS": 2,
+      "Uniswap Foundation": 1,
+      "Walrus": 2,
+      "PayPal USD": 3,
+      "The Graph": 3,
+      "Chiliz": 2,
+      "katana": 5,
+      "Hyperlane": 3,
+      "Artificial Superintelligence Alliance": 1,
+      "OpenSea": 1,
+      "Dynamic": 3,
+      "Privy": 3,
+      "Lit Protocol": 3,
+      "Saga": 1,
+      "Hardhat": 1,
+      "Gemini": 1,
+      "Fern": 3,
+      "Nora": 1
+    },
+    "avgPrizeAmount": 4344.245901639344
+  },
+  "gateway": "https://gateway.thegraph.com"
+}

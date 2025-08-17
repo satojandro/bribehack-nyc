@@ -17,7 +17,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { bounties } from '@/lib/mockData';
+import { bounties } from '@/lib/prizeData';
 import { useAccount } from 'wagmi';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { toast } from 'react-hot-toast';
@@ -39,6 +39,7 @@ const CommitPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [useCustomENS, setUseCustomENS] = useState(false);
   const [customENS, setCustomENS] = useState('');
+  const [pseudonymChoices, setPseudonymChoices] = useState<string[]>([]);
   
   // Get wallet connection status
   const { address, isConnected: wagmiConnected } = useAccount();
@@ -78,6 +79,13 @@ const CommitPage = () => {
   );
   const { data: recentCommitments, isLoading: recentLoading } = useRecentCommitments(5);
   const { data: globalStats } = useGlobalStats();
+  
+  // Generate pseudonym choices after mount to avoid hydration issues
+  useEffect(() => {
+    if (pseudonymChoices.length === 0) {
+      setPseudonymChoices(generatePseudonymChoices());
+    }
+  }, [generatePseudonymChoices]);
 
   /**
    * Handle bounty selection toggle
@@ -284,10 +292,10 @@ const CommitPage = () => {
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h3 className="text-lg font-semibold text-purple-300">
-                        {getDisplayNameWithEmoji(pseudonym)}
+                        {pseudonym ? getDisplayNameWithEmoji(pseudonym) : 'Generating...'}
                       </h3>
                       <p className="text-sm text-purple-400 font-mono">
-                        {fullENSName}
+                        {fullENSName || 'Generating...'}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -356,7 +364,7 @@ const CommitPage = () => {
                     Or pick from these options:
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {generatePseudonymChoices().map((option) => (
+                    {pseudonymChoices.map((option) => (
                       <button
                         key={option}
                         type="button"

@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import { namehash, keccak256, toBytes, getContract } from 'viem';
 import { generatePseudonym, generatePseudonymOptions, validatePseudonym, generateENSName } from '../nameGenerator';
@@ -34,11 +34,24 @@ export function useENSSubdomain() {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   
+  // Initialize with empty strings to avoid hydration mismatch
   const [state, setState] = useState<ENSSubdomainState>({
-    pseudonym: generatePseudonym(),
-    fullENSName: generateENSName(generatePseudonym()),
+    pseudonym: '',
+    fullENSName: '',
     status: 'idle'
   });
+  
+  // Generate initial pseudonym after mount to avoid hydration issues
+  useEffect(() => {
+    if (!state.pseudonym) {
+      const initialPseudonym = generatePseudonym();
+      setState(prev => ({
+        ...prev,
+        pseudonym: initialPseudonym,
+        fullENSName: generateENSName(initialPseudonym)
+      }));
+    }
+  }, []);
 
   /**
    * Generate a new random pseudonym

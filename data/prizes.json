@@ -1,0 +1,551 @@
+[
+  {
+    "id": "layerzero-best-omnichain-interaction",
+    "title": "Best Omnichain Interaction",
+    "sponsor": "LayerZero",
+    "prize": "$12,500",
+    "description": "For the project that demonstrates the most powerful and creative use of omnichain contract interactions. This prize specifically targets non-token transfer use cases that leverage LayerZero's core messaging rails.",
+    "tags": ["omnichain", "LayerZero", "messaging", "interoperability"],
+    "link": "https://ethglobal.com/showcase/layerzero"
+  },
+  {
+    "id": "layerzero-best-omnichain-defi-primitive",
+    "title": "Best Omnichain DeFi Primitive",
+    "sponsor": "LayerZero",
+    "prize": "$7,500",
+    "description": "For the most advanced and practical financial application built using LayerZero's token standards. This prize is for projects focused on the secure and efficient omnichain transfer of value.",
+    "tags": ["omnichain", "defi", "LayerZero", "token-standards"],
+    "link": "https://ethglobal.com/showcase/layerzero"
+  },
+  {
+    "id": "flow-best-killer-app",
+    "title": "Best Killer App on Flow",
+    "sponsor": "Flow",
+    "prize": "$6,000",
+    "description": "Consumer-oriented \"killer apps\" that have the power to define and lead entire industries by solving real user pain points at scale. Eligible projects include everything from AI Agents and RWA to games and social apps.",
+    "tags": ["consumer-app", "flow", "ai", "rwa", "gaming", "social"],
+    "link": "https://ethglobal.com/showcase/flow"
+  },
+  {
+    "id": "flow-best-use-of-actions-and-agents",
+    "title": "Best Use of Actions & Agents on Flow",
+    "sponsor": "Flow",
+    "prize": "$4,000",
+    "description": "Create new connectors to major protocols, chain cross-protocol workflows, integrate Actions into games, or build tools for discovering and using Actions. This prize is for pushing the boundaries of composability and how agents interact with Web3.",
+    "tags": ["flow-actions", "agents", "flow", "composability", "automation"],
+    "link": "https://ethglobal.com/showcase/flow"
+  },
+  {
+    "id": "flow-builder-pool-prize",
+    "title": "Flow Builder Pool Prize",
+    "sponsor": "Flow",
+    "prize": "$10,000",
+    "description": "Ship anything on Flow mainnet or testnet. Deploy a contract or send a transaction on Flow to qualify. The prize will be split evenly between all qualifying projects.",
+    "tags": ["flow", "buidl", "pool-prize"],
+    "link": "https://ethglobal.com/showcase/flow"
+  },
+  {
+    "id": "coinbase-developer-platform-great-onchain-app",
+    "title": "Build a Great Onchain App Using CDP",
+    "sponsor": "Coinbase Developer Platform",
+    "prize": "$20,000",
+    "description": "Build a high-quality onchain app using at least one of the Coinbase Developer Platform tools: Onramp, CDP Wallets, CDP Data APIs, or x402.",
+    "tags": ["coinbase", "cdp", "onchain-app", "onramp", "wallets", "data-api"],
+    "link": "https://ethglobal.com/showcase/coinbase-developer-platform"
+  },
+  {
+    "id": "zircuit-best-project",
+    "title": "Best Project on Zircuit",
+    "sponsor": "Zircuit",
+    "prize": "$5,500",
+    "description": "The best project that deploys on Zircuit. The code should be well-engineered, tested, and have a compelling use case.",
+    "tags": ["zircuit", "deployment", "engineering"],
+    "link": "https://ethglobal.com/showcase/zircuit"
+  },
+  {
+    "id": "zircuit-best-app-idea",
+    "title": "Best App Idea",
+    "sponsor": "Zircuit",
+    "prize": "$4,500",
+    "description": "A prize for a compelling, well-architected concept for a \"killer app\" on Zircuit. This prize is for visionary thinkers, and code isn't required.",
+    "tags": ["zircuit", "app-idea", "visionary"],
+    "link": "https://ethglobal.com/showcase/zircuit"
+  },
+  {
+    "id": "chainlink-best-usage-of-ccip-cct",
+    "title": "Best usage of Chainlink CCIP and/or CCT",
+    "sponsor": "Chainlink",
+    "prize": "$6,000",
+    "description": "Build something awesome using Chainlink CCIP and/or CCT Standard! This track purely focuses on implementations that make sense in a multi-chain world and use CCIP and/or CCT standard to enable seamless interoperability.",
+    "tags": ["chainlink", "ccip", "cct", "interoperability", "multichain"],
+    "link": "https://ethglobal.com/showcase/chainlink"
+  },
+  {
+    "id": "chainlink-connect-the-world",
+    "title": "Connect the World with Chainlink",
+    "sponsor": "Chainlink",
+    "prize": "$4,000",
+    "description": "Build something awesome using any Chainlink service: Price Feeds, Data Streams, PoR, VRF, Automation or Chainlink Functions.",
+    "tags": ["chainlink", "oracles", "data-feeds", "vrf", "automation"],
+    "link": "https://ethglobal.com/showcase/chainlink"
+  },
+  {
+    "id": "flare-network-main-track",
+    "title": "MAIN TRACK: use protocols on Flare blockchain",
+    "sponsor": "Flare Network",
+    "prize": "$8,000",
+    "description": "Build DApps utilising at least one of Flare's Enshrined Data Protocols: FTSO, FDC, Flare's Secure Random Number Generator, or FAssets.",
+    "tags": ["flare", "dapps", "ftso", "fdc", "fassets"],
+    "link": "https://ethglobal.com/showcase/flare-network"
+  },
+  {
+    "id": "flare-network-bonus-track",
+    "title": "BONUS TRACK: external data source or cross chain application",
+    "sponsor": "Flare Network",
+    "prize": "$2,000",
+    "description": "Most innovative external data source use case or most innovative cross chain application secured by Flare's protocols.",
+    "tags": ["flare", "data-source", "cross-chain", "innovation"],
+    "link": "https://ethglobal.com/showcase/flare-network"
+  },
+  {
+    "id": "hedera-ai-on-hedera",
+    "title": "AI on Hedera",
+    "sponsor": "Hedera",
+    "prize": "$3,500",
+    "description": "Build innovative applications, agents, tooling, or infrastructure that combine AI/ML with Hedera network services.",
+    "tags": ["hedera", "ai", "ml", "agents"],
+    "link": "https://ethglobal.com/showcase/hedera"
+  },
+  {
+    "id": "hedera-evm-smart-contracts-cross-chain",
+    "title": "Hedera EVM: Smart Contracts & Cross-Chain Integrations",
+    "sponsor": "Hedera",
+    "prize": "$3,500",
+    "description": "Build and deploy innovative Smart Contract based applications on Hedera, leveraging its EVM compatibility and integration into the Ethereum ecosystem.",
+    "tags": ["hedera", "evm", "smart-contracts", "cross-chain"],
+    "link": "https://ethglobal.com/showcase/hedera"
+  },
+  {
+    "id": "hedera-overall-winner",
+    "title": "Hedera Overall Winner",
+    "sponsor": "Hedera",
+    "prize": "$3,000",
+    "description": "The Overall Winner is the best project out of both AI and EVM tracks.",
+    "tags": ["hedera", "ai", "evm", "overall-winner"],
+    "link": "https://ethglobal.com/showcase/hedera"
+  },
+  {
+    "id": "ledger-clear-signing-erc-7730",
+    "title": "CLEAR SIGNING (ERC-7730)",
+    "sponsor": "Ledger",
+    "prize": "$4,000",
+    "description": "Make smart contract interactions more transparent by implementing the ERC-7730 standard and help drive adoption of transparent transaction signing.",
+    "tags": ["ledger", "erc-7730", "clear-signing", "security"],
+    "link": "https://ethglobal.com/showcase/ledger"
+  },
+  {
+    "id": "ledger-hardware-integrations",
+    "title": "[L] HARDWARE INTEGRATIONS",
+    "sponsor": "Ledger",
+    "prize": "$5,000",
+    "description": "Integrate Ledger hardware wallet support using our new Device Management Kit by building secure dApps, Device Apps, or Plugins.",
+    "tags": ["ledger", "hardware-wallet", "dapps", "security"],
+    "link": "https://ethglobal.com/showcase/ledger"
+  },
+  {
+    "id": "ledger-wildcard-award",
+    "title": "WILDCARD AWARD",
+    "sponsor": "Ledger",
+    "prize": "$1,000",
+    "description": "Rewarding creative and unique ideas. You're free to let your imagination run wild!",
+    "tags": ["ledger", "wildcard", "creativity"],
+    "link": "https://ethglobal.com/showcase/ledger"
+  },
+  {
+    "id": "circle-multichain-usdc-payment-system",
+    "title": "Build a Multichain USDC Payment System",
+    "sponsor": "Circle",
+    "prize": "$4,000",
+    "description": "Build an application that enables multichain USDC payments and payouts using Fast Transfers from CCTP V2.",
+    "tags": ["circle", "usdc", "payments", "multichain", "cctp"],
+    "link": "https://ethglobal.com/showcase/circle"
+  },
+  {
+    "id": "circle-enable-gas-payments-in-usdc",
+    "title": "Enable end users to pay for gas using USDC",
+    "sponsor": "Circle",
+    "prize": "$2,000",
+    "description": "Develop an application that enables users to pay network fees in USDC instead of native tokens by leveraging Circle Paymaster.",
+    "tags": ["circle", "usdc", "gas", "paymaster"],
+    "link": "https://ethglobal.com/showcase/circle"
+  },
+  {
+    "id": "circle-create-a-gasless-experience",
+    "title": "Create a Gasless Experience",
+    "sponsor": "Circle",
+    "prize": "$2,000",
+    "description": "Leverage Circle Wallets and the Gas Station feature to create a fully gas sponsored user experience.",
+    "tags": ["circle", "gasless", "wallets", "ux"],
+    "link": "https://ethglobal.com/showcase/circle"
+  },
+  {
+    "id": "circle-instant-multichain-usdc-access",
+    "title": "Enable instant, composable access to multichain USDC balances",
+    "sponsor": "Circle",
+    "prize": "$2,000",
+    "description": "Build with Circle Gateway to enable chain-abstracted USDC experiences.",
+    "tags": ["circle", "usdc", "gateway", "multichain"],
+    "link": "https://ethglobal.com/showcase/circle"
+  },
+  {
+    "id": "ens-best-use-of-ens",
+    "title": "Best use of ENS",
+    "sponsor": "ENS",
+    "prize": "$6,000",
+    "description": "Any type of ENS integration is eligible for this prize. Get creative!",
+    "tags": ["ens", "identity", "naming"],
+    "link": "https://ethglobal.com/showcase/ens"
+  },
+  {
+    "id": "ens-best-use-of-l2-primary-names",
+    "title": "Best use of L2 Primary Names",
+    "sponsor": "ENS",
+    "prize": "$4,000",
+    "description": "Display a user's primary ENS name on your application's frontend, using the L2ReverseRegistrar on a supported network.",
+    "tags": ["ens", "l2", "primary-names", "identity"],
+    "link": "https://ethglobal.com/showcase/ens"
+  },
+  {
+    "id": "uniswap-foundation-v4-hooks-on-unichain",
+    "title": "v4 Hooks on Unichain",
+    "sponsor": "Uniswap Foundation",
+    "prize": "$10,000",
+    "description": "Build projects that push the limits of what's possible in DeFi innovation using Uniswap v4 Hooks on Unichain.",
+    "tags": ["uniswap", "v4-hooks", "unichain", "defi"],
+    "link": "https://ethglobal.com/showcase/uniswap-foundation"
+  },
+  {
+    "id": "walrus-best-app-using-walrus",
+    "title": "Best app using Walrus for storage",
+    "sponsor": "Walrus",
+    "prize": "$4,000",
+    "description": "Use Walrus for decentralized storage in a new Web3 app.",
+    "tags": ["walrus", "storage", "decentralized-storage", "web3"],
+    "link": "https://ethglobal.com/showcase/walrus"
+  },
+  {
+    "id": "walrus-best-developer-tool",
+    "title": "Best developer tool for Walrus",
+    "sponsor": "Walrus",
+    "prize": "$6,000",
+    "description": "Create a new tool for developers integrating with Walrus.",
+    "tags": ["walrus", "developer-tool", "sdk", "tooling"],
+    "link": "https://ethglobal.com/showcase/walrus"
+  },
+  {
+    "id": "paypal-usd-grand-prize",
+    "title": "Grand Prize (Best Overall: Transformative Use of PYUSD)",
+    "sponsor": "PayPal USD",
+    "prize": "$4,500",
+    "description": "Awarded to the project that most convincingly demonstrates a powerful and scalable real-world use case for PYUSD.",
+    "tags": ["paypal", "pyusd", "stablecoin", "payments"],
+    "link": "https://ethglobal.com/showcase/paypal-usd"
+  },
+  {
+    "id": "paypal-usd-most-innovative-payment-use",
+    "title": "Most Innovative Payment-Focused Use of PYUSD",
+    "sponsor": "PayPal USD",
+    "prize": "$3,500",
+    "description": "This prize goes to the team that invents the most novel, clever, or unexpected way to handle payments with PYUSD.",
+    "tags": ["paypal", "pyusd", "payments", "innovation"],
+    "link": "https://ethglobal.com/showcase/paypal-usd"
+  },
+  {
+    "id": "paypal-usd-best-consumer-experience",
+    "title": "Best Consumer Experience",
+    "sponsor": "PayPal USD",
+    "prize": "$2,000",
+    "description": "Recognizes the project that delights end users, providing a remarkably smooth, intuitive, and enjoyable experience for anyone using PYUSD.",
+    "tags": ["paypal", "pyusd", "consumer-experience", "ux"],
+    "link": "https://ethglobal.com/showcase/paypal-usd"
+  },
+  {
+    "id": "the-graph-best-use-of-the-graph",
+    "title": "Best Use of The Graph Token API, Subgraphs, Substreams, or AI MCPs",
+    "sponsor": "The Graph",
+    "prize": "$5,000",
+    "description": "Build an innovative project that integrates The Graph's data products to deliver real-world utility, insight, or AI-enhanced functionality.",
+    "tags": ["the-graph", "subgraphs", "substreams", "token-api", "ai"],
+    "link": "https://ethglobal.com/showcase/the-graph"
+  },
+  {
+    "id": "the-graph-best-application-on-hypergraph",
+    "title": "Best Application Built on Hypergraph",
+    "sponsor": "The Graph",
+    "prize": "$4,000",
+    "description": "Build a high-impact application using Hypergraph, the Knowledge Graph Framework, to organize and query public web3 data.",
+    "tags": ["the-graph", "hypergraph", "knowledge-graph", "data"],
+    "link": "https://ethglobal.com/showcase/the-graph"
+  },
+  {
+    "id": "the-graph-use-of-grc-20-ts-library",
+    "title": "Use of GRC-20-ts Library in Dapp",
+    "sponsor": "The Graph",
+    "prize": "$1,000",
+    "description": "Build a decentralized application that utilizes the GRC-20-ts TypeScript library to publish offchain knowledge to the Knowledge Graph.",
+    "tags": ["the-graph", "grc-20-ts", "dapp", "knowledge-graph"],
+    "link": "https://ethglobal.com/showcase/the-graph"
+  },
+  {
+    "id": "chiliz-next-big-sports-entertainment-app",
+    "title": "The Next big Sports/Entertainment App on Chiliz Chain",
+    "sponsor": "Chiliz",
+    "prize": "$5,000",
+    "description": "Game-changing apps for sports fans. We're looking for the next breakthrough that can take consumer adoption even further.",
+    "tags": ["chiliz", "sports", "entertainment", "fan-engagement"],
+    "link": "https://ethglobal.com/showcase/chiliz"
+  },
+  {
+    "id": "chiliz-best-defi-app-or-usecase",
+    "title": "Best Defi App or Usecase on Chiliz Chain",
+    "sponsor": "Chiliz",
+    "prize": "$5,000",
+    "description": "Create the most impactful DeFi app or use case on Chiliz Chain, tailored for real-world utility and fan-driven economies.",
+    "tags": ["chiliz", "defi", "sports-finance", "fan-economy"],
+    "link": "https://ethglobal.com/showcase/chiliz"
+  },
+  {
+    "id": "katana-katana-forge",
+    "title": "Katana Forge",
+    "sponsor": "katana",
+    "prize": "$2,000",
+    "description": "Deliver a dev-experience power tool that lets hackers ship faster on katana.",
+    "tags": ["katana", "developer-tools", "cli", "ide-extension"],
+    "link": "https://ethglobal.com/showcase/katana"
+  },
+  {
+    "id": "katana-sharpest-yield",
+    "title": "Sharpest Yield",
+    "sponsor": "katana",
+    "prize": "$2,000",
+    "description": "Showcase how katana's native yield vaults and primitives can be composed into a novel strategy or product.",
+    "tags": ["katana", "yield", "defi", "tokenomics"],
+    "link": "https://ethglobal.com/showcase/katana"
+  },
+  {
+    "id": "katana-cross-chain-shuriken",
+    "title": "Cross-chain shuriken",
+    "sponsor": "katana",
+    "prize": "$2,000",
+    "description": "Build any consumer flow (zap, bridge-and-lend, cross-chain swap) that touches katana and any one other chain through the agglayer.",
+    "tags": ["katana", "cross-chain", "agglayer", "bridge"],
+    "link": "https://ethglobal.com/showcase/katana"
+  },
+  {
+    "id": "katana-open-dojo",
+    "title": "Open Dojo",
+    "sponsor": "katana",
+    "prize": "$2,000",
+    "description": "AI agents, games, NFT projects, or anything that doesn't fit into the other categories.",
+    "tags": ["katana", "open-track", "ai", "gaming", "nfts"],
+    "link": "https://ethglobal.com/showcase/katana"
+  },
+  {
+    "id": "katana-grow-the-pie",
+    "title": "Grow the Pie",
+    "sponsor": "katana",
+    "prize": "$2,000",
+    "description": "A bonus for projects that combine existing primitives and build on top of the current money legos.",
+    "tags": ["katana", "composability", "money-legos", "defi"],
+    "link": "https://ethglobal.com/showcase/katana"
+  },
+  {
+    "id": "hyperlane-best-use-of-hyperlane",
+    "title": "Best Use of Hyperlane",
+    "sponsor": "Hyperlane",
+    "prize": "$4,000",
+    "description": "The grand prize will be given to the most compelling submissions made during the hackathon.",
+    "tags": ["hyperlane", "interoperability", "grand-prize"],
+    "link": "https://ethglobal.com/showcase/hyperlane"
+  },
+  {
+    "id": "hyperlane-best-infrastructure",
+    "title": "Best Infrastructure",
+    "sponsor": "Hyperlane",
+    "prize": "$4,000",
+    "description": "This category is for building infrastructure that either enhances Hyperlane or makes use of Hyperlane's capabilities.",
+    "tags": ["hyperlane", "infrastructure", "tooling"],
+    "link": "https://ethglobal.com/showcase/hyperlane"
+  },
+  {
+    "id": "hyperlane-best-interchain-application",
+    "title": "Best Interchain Application",
+    "sponsor": "Hyperlane",
+    "prize": "$2,000",
+    "description": "An application that communicates between different blockchains, either transferring assets or making interchain function calls.",
+    "tags": ["hyperlane", "interchain", "dapp", "messaging"],
+    "link": "https://ethglobal.com/showcase/hyperlane"
+  },
+  {
+    "id": "artificial-superintelligence-alliance-best-use",
+    "title": "Best use of Artificial Superintelligence Alliance",
+    "sponsor": "Artificial Superintelligence Alliance",
+    "prize": "$10,000",
+    "description": "This prize has three tiers for the most effective and creative use of ASI:One, the most impactful launch on Agentverse, and the most cohesive multi-agent system.",
+    "tags": ["asi", "ai", "agents", "llm"],
+    "link": "https://ethglobal.com/showcase/artificial-superintelligence-alliance"
+  },
+  {
+    "id": "opensea-best-ai-experience-with-opensea-mcp",
+    "title": "Best AI Experience with OpenSea MCP",
+    "sponsor": "OpenSea",
+    "prize": "$10,000",
+    "description": "Awarded to the project that most creatively integrates OpenSea MCP into an AI-powered product or agent workflow.",
+    "tags": ["opensea", "ai", "mcp", "nft", "data"],
+    "link": "https://ethglobal.com/showcase/opensea"
+  },
+  {
+    "id": "dynamic-best-financial-app",
+    "title": "Best Financial App Built on Dynamic",
+    "sponsor": "Dynamic",
+    "prize": "$3,333",
+    "description": "The best onchain financial experience, such as programmable money, stablecoins, trading tools, or a DeFi dashboard.",
+    "tags": ["dynamic", "finance", "defi", "payments"],
+    "link": "https://ethglobal.com/showcase/dynamic"
+  },
+  {
+    "id": "dynamic-best-consumer-app",
+    "title": "Best Consumer App Built on Dynamic",
+    "sponsor": "Dynamic",
+    "prize": "$3,333",
+    "description": "The most engaging consumer-facing product that would appeal to non-crypto users.",
+    "tags": ["dynamic", "consumer-app", "ux", "onboarding"],
+    "link": "https://ethglobal.com/showcase/dynamic"
+  },
+  {
+    "id": "dynamic-best-app-involving-ai",
+    "title": "Best App Involving AI Built on Dynamic",
+    "sponsor": "Dynamic",
+    "prize": "$3,333",
+    "description": "The best integration of AI or autonomous agents in an onchain app.",
+    "tags": ["dynamic", "ai", "agents", "onchain"],
+    "link": "https://ethglobal.com/showcase/dynamic"
+  },
+  {
+    "id": "privy-best-consumer-app",
+    "title": "Best Consumer App Built on Privy",
+    "sponsor": "Privy",
+    "prize": "$1,700",
+    "description": "For the app that best showcases what's possible when crypto fades into the background.",
+    "tags": ["privy", "consumer-app", "ux", "wallets"],
+    "link": "https://ethglobal.com/showcase/privy"
+  },
+  {
+    "id": "privy-best-financial-app",
+    "title": "Best Financial App Built on Privy",
+    "sponsor": "Privy",
+    "prize": "$1,650",
+    "description": "For the best onchain financial experience, such as a trading tool, DeFi dashboard, or payment rail.",
+    "tags": ["privy", "finance", "defi", "payments"],
+    "link": "https://ethglobal.com/showcase/privy"
+  },
+  {
+    "id": "privy-best-app-involving-ai",
+    "title": "Best App Involving AI Built on Privy",
+    "sponsor": "Privy",
+    "prize": "$1,650",
+    "description": "For the most thoughtful use of AI or agentic behavior in an onchain app.",
+    "tags": ["privy", "ai", "agents", "onchain"],
+    "link": "https://ethglobal.com/showcase/privy"
+  },
+  {
+    "id": "lit-protocol-best-vincent-app",
+    "title": "Best Vincent App",
+    "sponsor": "Lit Protocol",
+    "prize": "$3,000",
+    "description": "The most powerful and useful Vincent app. Vincent is a delegation platform for agents and vaults, powered by Lit Protocol.",
+    "tags": ["lit-protocol", "vincent", "agents", "vaults"],
+    "link": "https://ethglobal.com/showcase/lit-protocol"
+  },
+  {
+    "id": "lit-protocol-best-vincent-ability-policy",
+    "title": "Best Vincent Ability / Policy",
+    "sponsor": "Lit Protocol",
+    "prize": "$1,500",
+    "description": "The most clever and sophisticated implementation of Abilities / Policies that run on Vincent.",
+    "tags": ["lit-protocol", "vincent", "abilities", "policies"],
+    "link": "https://ethglobal.com/showcase/lit-protocol"
+  },
+  {
+    "id": "lit-protocol-honorable-mention",
+    "title": "Honorable Mention",
+    "sponsor": "Lit Protocol",
+    "prize": "$500",
+    "description": "For noteworthy Vincent Apps, Abilities, or Policies that are not selected for other prizes.",
+    "tags": ["lit-protocol", "vincent", "honorable-mention"],
+    "link": "https://ethglobal.com/showcase/lit-protocol"
+  },
+  {
+    "id": "saga-best-dapp-on-saga-chainlet",
+    "title": "Best dApp built on Saga Chainlet",
+    "sponsor": "Saga",
+    "prize": "$5,000",
+    "description": "Build an innovative application across the DeFi, Web3 Gaming and AI Agents domains on a Saga Chainlet.",
+    "tags": ["saga", "dapp", "chainlet", "defi", "gaming", "ai"],
+    "link": "https://ethglobal.com/showcase/saga"
+  },
+  {
+    "id": "hardhat-best-projects-built-using-hardhat-3",
+    "title": "Best projects built using Hardhat 3",
+    "sponsor": "Hardhat",
+    "prize": "$5,000",
+    "description": "Build your project using Hardhat 3 as the main Solidity testing and network simulation tool.",
+    "tags": ["hardhat", "solidity", "testing", "tooling"],
+    "link": "https://ethglobal.com/showcase/hardhat"
+  },
+  {
+    "id": "gemini-best-use-of-gemini-wallet",
+    "title": "Best use of Gemini Wallet",
+    "sponsor": "Gemini",
+    "prize": "$5,000",
+    "description": "Ship something that proves seed phrases and vendor lock-in are relics using the Gemini Wallet.",
+    "tags": ["gemini", "wallet", "passkey", "erc-7579"],
+    "link": "https://ethglobal.com/showcase/gemini"
+  },
+  {
+    "id": "fern-best-finance-app",
+    "title": "Best Finance App on Fern",
+    "sponsor": "Fern",
+    "prize": "$1,750",
+    "description": "The best application that showcases the power of stablecoin embedded finance and moving money seamlessly across borders.",
+    "tags": ["fern", "finance", "onramp", "offramp", "stablecoin"],
+    "link": "https://ethglobal.com/showcase/fern"
+  },
+  {
+    "id": "fern-best-consumer-app",
+    "title": "Best Consumer App on Fern",
+    "sponsor": "Fern",
+    "prize": "$1,700",
+    "description": "A super-charged consumer app that blends the best of web2 and web3 financial and user experiences.",
+    "tags": ["fern", "consumer-app", "web2-web3", "ux"],
+    "link": "https://ethglobal.com/showcase/fern"
+  },
+  {
+    "id": "fern-best-ai-app",
+    "title": "Best AI App on Fern",
+    "sponsor": "Fern",
+    "prize": "$1,550",
+    "description": "The best use case that leverages AI for seamless finance and embeds Fern's fintech infrastructure.",
+    "tags": ["fern", "ai", "fintech", "onramp", "offramp"],
+    "link": "https://ethglobal.com/showcase/fern"
+  },
+  {
+    "id": "nora-best-use-of-nora-for-ai-coding",
+    "title": "Best Use of Nora for AI Coding",
+    "sponsor": "Nora",
+    "prize": "$5,000",
+    "description": "Push the limits of what's possible with Nora — an AI coding agent built specifically for Solidity and Web3 infrastructure.",
+    "tags": ["nora", "ai", "coding-agent", "solidity", "web3"],
+    "link": "https://ethglobal.com/showcase/nora"
+  }
+]

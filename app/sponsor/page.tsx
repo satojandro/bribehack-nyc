@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { bounties } from '@/lib/mockData';
+import { bounties } from '@/lib/prizeData';
 import { useAccount } from 'wagmi';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { toast } from 'react-hot-toast';

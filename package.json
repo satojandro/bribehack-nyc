@@ -12,6 +12,7 @@
     "@dynamic-labs/ethereum": "^3.5.0",
     "@dynamic-labs/sdk-react-core": "^3.5.0",
     "@dynamic-labs/wagmi-connector": "^3.5.0",
+    "@graphprotocol/graph-cli": "^0.97.1",
     "@tanstack/react-query": "^5.85.3",
     "ethers": "^5.7.2",
     "framer-motion": "^11.0.20",
@@ -30,11 +31,13 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "dotenv": "^17.2.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
     "postcss": "^8",
     "postcss-import": "^16.1.1",
     "tailwindcss": "^3.3.0",
+    "tsx": "^4.20.4",
     "typescript": "^5"
   }
 }
