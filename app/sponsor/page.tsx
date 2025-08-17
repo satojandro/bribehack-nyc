@@ -33,9 +33,11 @@ const SponsorPage = () => {
   const [targetBounty, setTargetBounty] = useState('');
   
   // Get wallet connection status
-  const { address } = useAccount();
+  const { address, isConnected: wagmiConnected } = useAccount();
   const { user } = useDynamicContext();
-  const isConnected = !!user && !!address;
+  
+  // For Dynamic embedded wallets, prioritize having an address
+  const isConnected = !!address || (!!user && wagmiConnected);
 
   // Contract hooks
   const { 
