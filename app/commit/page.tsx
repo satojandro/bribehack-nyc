@@ -29,13 +29,16 @@ import {
   useGlobalStats 
 } from '@/lib/hooks/useSubgraphData';
 import { formatEthAmount, getDisplayName, formatTimeAgo } from '@/lib/graphql/utils';
+import { useENSSubdomain } from '@/lib/hooks/useENSSubdomain';
+import { getDisplayNameWithEmoji } from '@/lib/nameGenerator';
 
 const CommitPage = () => {
   // State for form inputs
   const [selectedBounties, setSelectedBounties] = useState<string[]>([]);
-  const [ensName, setEnsName] = useState('');
   const [ipfsHash, setIpfsHash] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [useCustomENS, setUseCustomENS] = useState(false);
+  const [customENS, setCustomENS] = useState('');
   
   // Get wallet connection status
   const { address, isConnected: wagmiConnected } = useAccount();
@@ -51,6 +54,23 @@ const CommitPage = () => {
   const { commitToBounties, isPending: isCommitting, isConfirming, isConfirmed, error } = useCommitToBounties();
   const { data: existingCommitment } = useGetCommitment(address);
   
+  // ENS subdomain hook
+  const {
+    pseudonym,
+    fullENSName,
+    status: ensStatus,
+    error: ensError,
+    isAvailable,
+    generateNewPseudonym,
+    generatePseudonymChoices,
+    setPseudonym,
+    checkAvailability,
+    mintSubdomain,
+    canMint,
+    isLoading: ensLoading,
+    isMinted
+  } = useENSSubdomain();
+
   // Subgraph data hooks
   const { data: userCommitments, isLoading: commitmentsLoading } = useCommitmentsByHacker(
     address || '', 
@@ -97,14 +117,17 @@ const CommitPage = () => {
     }
     
     try {
+      // Determine which ENS name to use
+      const ensToUse = useCustomENS ? customENS : (isMinted ? fullENSName : '');
+      
       console.log('Submitting commitment:', {
         bounties: selectedBounties,
-        ens: ensName || '',
+        ens: ensToUse,
         ipfsHash: ipfsHash || ''
       });
       
       // Call the smart contract
-      await commitToBounties(selectedBounties, ensName, ipfsHash);
+      await commitToBounties(selectedBounties, ensToUse, ipfsHash);
       
     } catch (error) {
       console.error('Commit error:', error);
@@ -123,7 +146,7 @@ const CommitPage = () => {
       
       // Reset form
       setSelectedBounties([]);
-      setEnsName('');
+      setCustomENS('');
       setIpfsHash('');
     }
   }, [isConfirmed, selectedBounties.length]);
@@ -211,30 +234,170 @@ const CommitPage = () => {
           </div>
         </div>
 
-        {/* Optional fields */}
+        {/* ENS Pseudonym Creation */}
+        <div className="card space-y-6">
+          <h2 className="text-lg font-semibold text-gray-200 flex items-center">
+            🔮 Create Your Hacker Identity
+            <span className="ml-2 text-xs bg-purple-600 text-white px-2 py-1 rounded">
+              Get .bribehack.eth
+            </span>
+          </h2>
+          <p className="text-sm text-gray-400">
+            Mint a free ENS subdomain to create your hacker persona and hide your real address
+          </p>
+          
+          {/* ENS Generation Options */}
+          <div className="space-y-4">
+            {/* Toggle between generated and custom ENS */}
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={() => setUseCustomENS(false)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  !useCustomENS 
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-medium text-gray-300 hover:bg-gray-light'
+                }`}
+                disabled={isSubmitting || ensLoading}
+              >
+                🎲 Generate Pseudonym
+              </button>
+              <button
+                type="button"
+                onClick={() => setUseCustomENS(true)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  useCustomENS 
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-medium text-gray-300 hover:bg-gray-light'
+                }`}
+                disabled={isSubmitting || ensLoading}
+              >
+                ✏️ Use Custom ENS
+              </button>
+            </div>
+
+            {!useCustomENS ? (
+              /* Generated Pseudonym Section */
+              <div className="space-y-4">
+                {/* Current Generated Name */}
+                <div className="p-4 bg-purple-900/20 border border-purple-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-purple-300">
+                        {getDisplayNameWithEmoji(pseudonym)}
+                      </h3>
+                      <p className="text-sm text-purple-400 font-mono">
+                        {fullENSName}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {isAvailable === true && (
+                        <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">
+                          Available
+                        </span>
+                      )}
+                      {isAvailable === false && (
+                        <span className="text-xs bg-red-600 text-white px-2 py-1 rounded">
+                          Taken
+                        </span>
+                      )}
+                      {isMinted && (
+                        <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">
+                          ✅ Minted
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={generateNewPseudonym}
+                      className="text-xs bg-gray-medium hover:bg-gray-light text-gray-300 px-3 py-2 rounded transition-colors"
+                      disabled={isSubmitting || ensLoading}
+                    >
+                      🎲 Generate New
+                    </button>
+                    
+                    {!isMinted && isAvailable !== true && (
+                      <button
+                        type="button"
+                        onClick={() => checkAvailability()}
+                        className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded transition-colors"
+                        disabled={isSubmitting || ensLoading}
+                      >
+                        {ensLoading ? 'Checking...' : 'Check Availability'}
+                      </button>
+                    )}
+                    
+                    {canMint && !isMinted && (
+                      <button
+                        type="button"
+                        onClick={() => mintSubdomain()}
+                        className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded transition-colors"
+                        disabled={isSubmitting || ensLoading}
+                      >
+                        {ensLoading ? 'Minting...' : '⚡ Mint ENS'}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {ensError && (
+                    <p className="text-xs text-red-400 mt-2">
+                      {ensError}
+                    </p>
+                  )}
+                </div>
+
+                {/* Quick Options */}
+                <div>
+                  <label className="block text-xs text-gray-400 mb-2">
+                    Or pick from these options:
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {generatePseudonymChoices().map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setPseudonym(option)}
+                        className="text-xs bg-gray-dark hover:bg-gray-medium text-gray-300 px-3 py-2 rounded border border-gray-light/20 hover:border-primary/50 transition-colors"
+                        disabled={isSubmitting || ensLoading}
+                      >
+                        {getDisplayNameWithEmoji(option).split(' ')[0]} {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Custom ENS Section */
+              <div>
+                <label htmlFor="customENS" className="block text-sm font-medium text-gray-300 mb-2">
+                  Custom ENS Name
+                  <span className="text-xs text-gray-500 ml-2">
+                    (Use your existing ENS)
+                  </span>
+                </label>
+                <input 
+                  type="text" 
+                  id="customENS"
+                  value={customENS}
+                  onChange={(e) => setCustomENS(e.target.value)}
+                  placeholder="vitalik.eth or your-name.bribehack.eth"
+                  className="w-full"
+                  disabled={isSubmitting}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Optional Information */}
         <div className="card space-y-6">
           <h2 className="text-lg font-semibold text-gray-200">
             Optional Information
           </h2>
-          
-          {/* ENS Pseudonym field */}
-          <div>
-            <label htmlFor="ensName" className="block text-sm font-medium text-gray-300 mb-2">
-              ENS Pseudonym
-              <span className="text-xs text-gray-500 ml-2">
-                (Hide your address on leaderboard)
-              </span>
-            </label>
-            <input 
-              type="text" 
-              id="ensName"
-              value={ensName}
-              onChange={(e) => setEnsName(e.target.value)}
-              placeholder="vitalik.eth"
-              className="w-full"
-              disabled={isSubmitting}
-            />
-          </div>
 
           {/* IPFS Hash field */}
           <div>

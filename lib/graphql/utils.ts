@@ -15,6 +15,7 @@ import type {
   FormattedCommitment,
   LeaderboardEntry 
 } from './types';
+import { getDisplayNameWithEmoji, extractPseudonym } from '../nameGenerator';
 
 // === ADDRESS UTILITIES ===
 
@@ -118,6 +119,11 @@ export function isValidENS(ensName: string): boolean {
 
 export function getDisplayName(address: string, ensName?: string): string {
   if (ensName && ensName.trim()) {
+    // If it's a bribehack.eth subdomain, add emoji
+    if (ensName.endsWith('.bribehack.eth')) {
+      const pseudonym = extractPseudonym(ensName);
+      return getDisplayNameWithEmoji(pseudonym);
+    }
     return ensName;
   }
   return shortenAddress(address);
@@ -289,7 +295,7 @@ export function aggregateBribesByBounty(bribes: FormattedBribe[]): Record<string
 export function calculatePlatformMetrics(
   commitments: FormattedCommitment[],
   bribes: FormattedBribe[],
-  hackers: FormattedHacker[]
+  _hackers: FormattedHacker[]
 ) {
   const totalCommitments = commitments.length;
   const totalBribes = bribes.length;
