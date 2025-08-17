@@ -20,6 +20,13 @@ import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { isAddress } from 'viem';
 import { useSponsorBounty, useBribeHacker } from '@/lib/useBribehack';
+import { 
+  useRecentBribes, 
+  useRecentSponsorships, 
+  useTopHackers,
+  useGlobalStats 
+} from '@/lib/hooks/useSubgraphData';
+import { formatEthAmount, getDisplayName, shortenAddress } from '@/lib/graphql/utils';
 
 const SponsorPage = () => {
   // State for sponsor bounty form
@@ -47,6 +54,12 @@ const SponsorPage = () => {
     isConfirmed: isSponsorConfirmed,
     error: sponsorError 
   } = useSponsorBounty();
+  
+  // Subgraph data hooks
+  const { data: recentBribes, isLoading: bribesLoading } = useRecentBribes(10);
+  const { data: recentSponsorships, isLoading: sponsorshipsLoading } = useRecentSponsorships(10);
+  const { data: topHackers, isLoading: hackersLoading } = useTopHackers(10);
+  const { data: globalStats } = useGlobalStats();
   
   const { 
     bribeHacker, 
@@ -391,6 +404,213 @@ const SponsorPage = () => {
           </button>
         </form>
       </div>
+      
+      {/* Live Activity Section spanning both columns */}
+      <motion.div 
+        className="lg:col-span-2 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        {/* Top Hackers to Bribe */}
+        <div className="card">
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
+            🎯 Top Hackers Available for Bribes
+            {globalStats && (
+              <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                {globalStats.totalHackers} active
+              </span>
+            )}
+          </h3>
+          
+          {hackersLoading ? (
+            <div className="grid md:grid-cols-2 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-20 bg-gray-medium/30 rounded-lg"></div>
+                </div>
+              ))}
+            </div>
+          ) : topHackers && topHackers.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topHackers.slice(0, 6).map((hacker) => (
+                <div 
+                  key={hacker.address}
+                  className="p-4 bg-gray-medium/30 rounded-lg border border-gray-light/20 hover:border-primary/50 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">
+                        {getDisplayName(hacker.address, hacker.ensPseudonym)}
+                      </p>
+                      <p className="text-xs text-gray-400 font-mono">
+                        {shortenAddress(hacker.address)}
+                      </p>
+                    </div>
+                    <span className="text-xs bg-primary text-white px-2 py-1 rounded">
+                      #{hacker.id?.slice(-4)}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-1 mb-3">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-400">Total Received:</span>
+                      <span className="text-green-400 font-medium">
+                        {formatEthAmount(hacker.totalBribesReceivedWei || '0', 3)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-400">Commitments:</span>
+                      <span className="text-blue-400">{hacker.commitmentCount}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-400">Bounties:</span>
+                      <span className="text-purple-400">{hacker.bountyIds.length}</span>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    className="w-full text-xs bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 py-2 rounded transition-colors"
+                    onClick={() => setBribeAddress(hacker.address)}
+                  >
+                    🎯 Target for Bribe
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>No hackers found</p>
+              <p className="text-xs mt-1">Waiting for hackers to commit...</p>
+            </div>
+          )}
+        </div>
+
+        {/* Recent Activity Grid */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Recent Bribes */}
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              💰 Recent Bribes
+              {globalStats && (
+                <span className="ml-2 text-xs bg-red-600 text-white px-2 py-1 rounded">
+                  {globalStats.totalBribes} total
+                </span>
+              )}
+            </h3>
+            
+            {bribesLoading ? (
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-16 bg-gray-medium/30 rounded-lg"></div>
+                  </div>
+                ))}
+              </div>
+            ) : recentBribes && recentBribes.length > 0 ? (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {recentBribes.map((bribe) => (
+                  <div 
+                    key={bribe.id}
+                    className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-300">
+                          <span className="text-blue-400 font-mono text-xs">
+                            {shortenAddress(bribe.briber)}
+                          </span>
+                          {' → '}
+                          <span className="text-green-400 font-mono text-xs">
+                            {shortenAddress(bribe.hacker)}
+                          </span>
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          for <span className="text-purple-400">{bribe.bountyId}</span>
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-green-400">
+                          {formatEthAmount(bribe.amountWei, 3)}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {bribe.timeAgo}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No bribes yet</p>
+                <p className="text-xs mt-1">Be the first to bribe a hacker!</p>
+              </div>
+            )}
+          </div>
+
+          {/* Recent Sponsorships */}
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              🏆 Recent Sponsorships
+              {globalStats && (
+                <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                  {globalStats.totalSponsors} total
+                </span>
+              )}
+            </h3>
+            
+            {sponsorshipsLoading ? (
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-16 bg-gray-medium/30 rounded-lg"></div>
+                  </div>
+                ))}
+              </div>
+            ) : recentSponsorships && recentSponsorships.length > 0 ? (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {recentSponsorships.map((sponsorship) => (
+                  <div 
+                    key={sponsorship.id}
+                    className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-300">
+                          <span className="text-blue-400 font-mono text-xs">
+                            {shortenAddress(sponsorship.sponsor)}
+                          </span>
+                          {' sponsored '}
+                          <span className="text-purple-400 font-medium">
+                            {sponsorship.bounty.bountyId}
+                          </span>
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Pool: {formatEthAmount(sponsorship.bounty.prizePoolEth || '0', 3)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-yellow-400">
+                          +{formatEthAmount(sponsorship.amount || '0', 3)}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {sponsorship.timeAgo}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No sponsorships yet</p>
+                <p className="text-xs mt-1">Be the first to sponsor a bounty!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
       
       {/* Info section spanning both columns */}
       <motion.div 

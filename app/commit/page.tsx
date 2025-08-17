@@ -23,6 +23,12 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useCommitToBounties, useGetCommitment } from '@/lib/useBribehack';
+import { 
+  useCommitmentsByHacker, 
+  useRecentCommitments, 
+  useGlobalStats 
+} from '@/lib/hooks/useSubgraphData';
+import { formatEthAmount, getDisplayName, formatTimeAgo } from '@/lib/graphql/utils';
 
 const CommitPage = () => {
   // State for form inputs
@@ -44,6 +50,14 @@ const CommitPage = () => {
   // Contract hooks
   const { commitToBounties, isPending: isCommitting, isConfirming, isConfirmed, error } = useCommitToBounties();
   const { data: existingCommitment } = useGetCommitment(address);
+  
+  // Subgraph data hooks
+  const { data: userCommitments, isLoading: commitmentsLoading } = useCommitmentsByHacker(
+    address || '', 
+    !!address
+  );
+  const { data: recentCommitments, isLoading: recentLoading } = useRecentCommitments(5);
+  const { data: globalStats } = useGlobalStats();
 
   /**
    * Handle bounty selection toggle
@@ -257,6 +271,129 @@ const CommitPage = () => {
                 : `Commit to ${selectedBounties.length || 0} ${selectedBounties.length === 1 ? 'Bounty' : 'Bounties'}`}
         </button>
       </form>
+      
+      {/* Live Activity Section */}
+      <motion.div 
+        className="mt-8 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        {/* User's Previous Commitments */}
+        {address && userCommitments && userCommitments.length > 0 && (
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              📊 Your Previous Commitments
+              <span className="ml-2 text-xs bg-primary text-white px-2 py-1 rounded">
+                {userCommitments.length}
+              </span>
+            </h3>
+            <div className="space-y-3">
+              {userCommitments.slice(0, 3).map((commitment) => (
+                <div 
+                  key={commitment.id}
+                  className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-300">
+                        Committed to <span className="text-primary font-medium">
+                          {commitment.bountyCount} bounties
+                        </span>
+                      </p>
+                      {commitment.ensPseudonym && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          as {commitment.ensPseudonym}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {commitment.timeAgo}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {commitment.bountyIds.map((bountyId) => (
+                      <span 
+                        key={bountyId}
+                        className="text-xs bg-gray-dark px-2 py-1 rounded"
+                      >
+                        {bountyId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent Platform Activity */}
+        <div className="card">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            🔥 Recent Commits
+            {globalStats && (
+              <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                {globalStats.totalCommitments} total
+              </span>
+            )}
+          </h3>
+          
+          {recentLoading ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-16 bg-gray-medium/30 rounded-lg"></div>
+                </div>
+              ))}
+            </div>
+          ) : recentCommitments && recentCommitments.length > 0 ? (
+            <div className="space-y-3">
+              {recentCommitments.map((commitment) => (
+                <div 
+                  key={commitment.id}
+                  className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-300">
+                        <span className="text-blue-400 font-mono text-xs">
+                          {getDisplayName(commitment.hacker, commitment.ensPseudonym)}
+                        </span>
+                        {' '}committed to <span className="text-primary font-medium">
+                          {commitment.bountyCount} bounties
+                        </span>
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {commitment.timeAgo}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {commitment.bountyIds.slice(0, 3).map((bountyId) => (
+                      <span 
+                        key={bountyId}
+                        className="text-xs bg-gray-dark px-2 py-1 rounded"
+                      >
+                        {bountyId}
+                      </span>
+                    ))}
+                    {commitment.bountyIds.length > 3 && (
+                      <span className="text-xs text-gray-500">
+                        +{commitment.bountyIds.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>No recent commitments found</p>
+              <p className="text-xs mt-1">Be the first to commit to bounties!</p>
+            </div>
+          )}
+        </div>
+      </motion.div>
       
       {/* Info box */}
       <motion.div 

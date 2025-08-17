@@ -1,209 +1,366 @@
 /**
- * Leaderboard Page Component
+ * Leaderboard Page
  * 
- * Displays all active bounties in a trading-dashboard style table.
- * Features:
- * - Real-time bounty data (currently mocked)
- * - Heat score visualization (popularity metric)
- * - Chain indicators
- * - Prize and bribe pool amounts
- * - Number of hacker commits
- * 
- * This is the main discovery page where hackers can see what's hot
- * and sponsors can see where the action is.
+ * Live leaderboard of top hackers ranked by total bribes received,
+ * commitments made, and recent activity. Shows real subgraph data
+ * with filtering, searching, and detailed stats.
  */
 
 'use client';
 
-import { bounties } from '@/lib/mockData';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FireIcon, CubeTransparentIcon } from '@heroicons/react/24/solid';
-import Link from 'next/link';
-
-/**
- * Get chain-specific styling and icon
- * In production, would use actual chain logos
- * @param chain - The blockchain name
- */
-const getChainStyle = (chain: string) => {
-  const chainColors: { [key: string]: string } = {
-    'Polygon': 'text-purple-400',
-    'Base': 'text-blue-400',
-    'Optimism': 'text-red-400',
-    'Zora': 'text-green-400',
-    'Scroll': 'text-yellow-400',
-  };
-  
-  return {
-    icon: <CubeTransparentIcon className={`h-5 w-5 ${chainColors[chain] || 'text-gray-400'}`} />,
-    color: chainColors[chain] || 'text-gray-400'
-  };
-};
-
-/**
- * Get heat score color based on value
- * Higher scores = hotter colors (red/orange)
- * Lower scores = cooler colors (yellow)
- */
-const getHeatScoreColor = (score: number) => {
-  if (score > 80) return 'text-red-500';
-  if (score > 60) return 'text-orange-500';
-  if (score > 40) return 'text-yellow-500';
-  return 'text-gray-500';
-};
+import { useLeaderboard, useGlobalStats, useDashboardData } from '@/lib/hooks/useSubgraphData';
+import { 
+  formatEthAmount, 
+  getDisplayName, 
+  shortenAddress,
+  formatTimeAgo 
+} from '@/lib/graphql/utils';
 
 const LeaderboardPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'bribes' | 'commitments' | 'activity'>('bribes');
+  const [filterMinBribes, setFilterMinBribes] = useState(0);
+
+  // Fetch leaderboard and global stats
+  const { data: leaderboard, isLoading, error } = useLeaderboard(100);
+  const { data: globalStats } = useGlobalStats();
+  const { data: dashboardData } = useDashboardData();
+
+  // Filter and sort leaderboard
+  const filteredLeaderboard = leaderboard?.filter(hacker => {
+    const matchesSearch = searchTerm === '' || 
+      hacker.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (hacker.ensPseudonym && hacker.ensPseudonym.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const meetsMinBribes = hacker.totalBribesReceived >= filterMinBribes;
+    
+    return matchesSearch && meetsMinBribes;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'bribes':
+        return b.totalBribesReceived - a.totalBribesReceived;
+      case 'commitments':
+        return b.commitmentCount - a.commitmentCount;
+      case 'activity':
+        return b.lastActive.getTime() - a.lastActive.getTime();
+      default:
+        return 0;
+    }
+  });
+
+  const getRankBadgeColor = (rank: number) => {
+    if (rank === 1) return 'bg-yellow-500 text-yellow-900';
+    if (rank === 2) return 'bg-gray-400 text-gray-900';
+    if (rank === 3) return 'bg-amber-600 text-amber-100';
+    if (rank <= 10) return 'bg-primary text-white';
+    return 'bg-gray-600 text-gray-200';
+  };
+
+  const getRankEmoji = (rank: number) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    if (rank <= 10) return '🏆';
+    return '🔥';
+  };
+
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      className="max-w-7xl mx-auto space-y-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-secondary">Bounty Leaderboard</h1>
-        <p className="text-gray-400">
-          Real-time hacker commitments and sponsor incentives. 
-          <span className="text-xs ml-2 text-gray-500">
-            Updates every block
-          </span>
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          🏆 Bribehack Leaderboard
+        </h1>
+        <p className="text-xl text-gray-300 mb-6">
+          Top hackers ranked by total bribes received, commitments, and activity
         </p>
+        
+        {/* Global Stats */}
+        {globalStats && (
+          <div className="flex justify-center space-x-8 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400">
+                {formatEthAmount(globalStats.totalBribeVolume || '0', 2)}
+              </div>
+              <div className="text-gray-400">Total Bribes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400">
+                {globalStats.totalHackers}
+              </div>
+              <div className="text-gray-400">Active Hackers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-400">
+                {globalStats.totalCommitments}
+              </div>
+              <div className="text-gray-400">Commitments</div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Stats cards - Quick overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="card p-4">
-          <p className="text-xs text-gray-400 uppercase">Total Bounties</p>
-          <p className="text-2xl font-bold text-primary">{bounties.length}</p>
-        </div>
-        <div className="card p-4">
-          <p className="text-xs text-gray-400 uppercase">Total Prize Pool</p>
-          <p className="text-2xl font-bold text-secondary">
-            ${bounties.reduce((sum, b) => sum + b.currentPrizePool, 0).toLocaleString()}
-          </p>
-        </div>
-        <div className="card p-4">
-          <p className="text-xs text-gray-400 uppercase">Total Bribes</p>
-          <p className="text-2xl font-bold text-accent">
-            {bounties.reduce((sum, b) => sum + (b.bribePool || 0), 0).toFixed(1)} ETH
-          </p>
-        </div>
-        <div className="card p-4">
-          <p className="text-xs text-gray-400 uppercase">Active Hackers</p>
-          <p className="text-2xl font-bold text-gray-200">
-            {bounties.reduce((sum, b) => sum + b.commits, 0)}
-          </p>
+      {/* Filters and Search */}
+      <div className="card">
+        <div className="grid md:grid-cols-4 gap-4">
+          {/* Search */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Search Hackers
+            </label>
+            <input
+              type="text"
+              placeholder="Address or ENS name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-gray-dark border border-gray-light rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-primary"
+            />
+          </div>
+
+          {/* Sort By */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Sort By
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="w-full bg-gray-dark border border-gray-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
+            >
+              <option value="bribes">Total Bribes</option>
+              <option value="commitments">Commitments</option>
+              <option value="activity">Recent Activity</option>
+            </select>
+          </div>
+
+          {/* Min Bribes Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Min Bribes (ETH)
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.001"
+              placeholder="0.0"
+              value={filterMinBribes || ''}
+              onChange={(e) => setFilterMinBribes(parseFloat(e.target.value) || 0)}
+              className="w-full bg-gray-dark border border-gray-light rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-primary"
+            />
+          </div>
+
+          {/* Results Count */}
+          <div className="flex items-end">
+            <div className="text-sm text-gray-400">
+              {filteredLeaderboard?.length || 0} hackers found
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main bounties table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-medium">
-          <thead className="bg-gray-dark">
-            <tr>
-              {/* Table headers with uppercase styling */}
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Bounty
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Sponsor
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Prize Pool
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Hackers
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Bribe Pool
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Chain
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-mono font-medium text-gray-300 uppercase tracking-wider">
-                Heat
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-gray-dark/50 divide-y divide-gray-medium">
-            {bounties.map((bounty, index) => {
-              const chainStyle = getChainStyle(bounty.chain);
-              const heatColor = getHeatScoreColor(bounty.heatScore || 0);
+      {/* Leaderboard */}
+      <div className="card">
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-20 bg-gray-medium/30 rounded-lg"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-400">
+            <p className="text-lg font-semibold mb-2">Error loading leaderboard</p>
+            <p className="text-sm">Please try again later</p>
+          </div>
+        ) : filteredLeaderboard && filteredLeaderboard.length > 0 ? (
+          <div className="space-y-4">
+            {filteredLeaderboard.map((hacker, index) => {
+              const displayRank = index + 1;
               
               return (
-                <motion.tr 
-                  key={bounty.id} 
-                  className="hover:bg-gray-dark transition-colors duration-200 cursor-pointer"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  onClick={() => {
-                    // In production, this would navigate to bounty details
-                    console.log('Navigate to bounty:', bounty.id);
-                  }}
+                <motion.div
+                  key={hacker.address}
+                  className={`
+                    p-6 rounded-lg border transition-all duration-200 hover:scale-[1.02]
+                    ${displayRank <= 3 
+                      ? 'bg-gradient-to-r from-yellow-900/20 to-yellow-800/20 border-yellow-500/50 shadow-glow-yellow' 
+                      : displayRank <= 10
+                        ? 'bg-gray-medium/50 border-primary/30 hover:border-primary/50'
+                        : 'bg-gray-medium/30 border-gray-light/20 hover:border-gray-light/40'
+                    }
+                  `}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  {/* Bounty title with truncation for mobile */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-200">
-                      <p className="truncate max-w-xs">{bounty.title}</p>
-                      <p className="text-xs text-gray-500">{bounty.id}</p>
+                  <div className="flex items-center justify-between">
+                    {/* Rank and Hacker Info */}
+                    <div className="flex items-center space-x-4">
+                      {/* Rank Badge */}
+                      <div className={`
+                        flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg
+                        ${getRankBadgeColor(displayRank)}
+                      `}>
+                        {getRankEmoji(displayRank)}
+                      </div>
+
+                      {/* Hacker Details */}
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h3 className="text-lg font-semibold text-white">
+                            {getDisplayName(hacker.address, hacker.ensPseudonym)}
+                          </h3>
+                          <span className="text-xs bg-gray-dark text-gray-300 px-2 py-1 rounded font-mono">
+                            {shortenAddress(hacker.address)}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 text-sm text-gray-400">
+                          <span>#{displayRank}</span>
+                          <span>Last active: {formatTimeAgo(hacker.lastActive.getTime() / 1000)}</span>
+                          <span>{hacker.bountyIds.length} bounties</span>
+                        </div>
+                      </div>
                     </div>
-                  </td>
-                  
-                  {/* Sponsor name */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {bounty.sponsor}
-                  </td>
-                  
-                  {/* Prize pool in USD */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-secondary">
-                      ${bounty.currentPrizePool.toLocaleString()}
-                    </span>
-                  </td>
-                  
-                  {/* Number of committed hackers */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {bounty.commits}
-                  </td>
-                  
-                  {/* Bribe pool in ETH */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-accent">
-                      {bounty.bribePool || 0} ETH
-                    </span>
-                  </td>
-                  
-                  {/* Chain indicator with icon */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      {chainStyle.icon}
-                      <span className={`text-sm ${chainStyle.color}`}>
-                        {bounty.chain}
-                      </span>
+
+                    {/* Stats */}
+                    <div className="text-right space-y-2">
+                      <div className="text-2xl font-bold text-green-400">
+                        {formatEthAmount(hacker.totalBribesReceived.toString(), 3)}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Total Bribes Received
+                      </div>
+                      
+                      <div className="flex space-x-4 text-xs">
+                        <div className="text-center">
+                          <div className="text-blue-400 font-semibold">
+                            {hacker.commitmentCount}
+                          </div>
+                          <div className="text-gray-500">Commits</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-purple-400 font-semibold">
+                            {hacker.bribeCount}
+                          </div>
+                          <div className="text-gray-500">Bribes</div>
+                        </div>
+                      </div>
                     </div>
-                  </td>
-                  
-                  {/* Heat score with fire icon */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <FireIcon className={`h-5 w-5 ${heatColor}`} />
-                      <span className={`ml-2 text-sm ${heatColor}`}>
-                        {bounty.heatScore || 0}
-                      </span>
+                  </div>
+
+                  {/* Bounty Tags */}
+                  {hacker.bountyIds.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-light/20">
+                      <div className="flex flex-wrap gap-2">
+                        <span className="text-xs text-gray-400 mr-2">Working on:</span>
+                        {hacker.bountyIds.slice(0, 5).map((bountyId) => (
+                          <span 
+                            key={bountyId}
+                            className="text-xs bg-purple-900/30 text-purple-300 px-2 py-1 rounded"
+                          >
+                            {bountyId}
+                          </span>
+                        ))}
+                        {hacker.bountyIds.length > 5 && (
+                          <span className="text-xs text-gray-500">
+                            +{hacker.bountyIds.length - 5} more
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </td>
-                </motion.tr>
+                  )}
+                </motion.div>
               );
             })}
-          </tbody>
-        </table>
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg font-semibold mb-2">No hackers found</p>
+            <p className="text-sm">Adjust your filters or wait for hackers to start committing</p>
+          </div>
+        )}
       </div>
-      
-      {/* Footer info */}
-      <div className="mt-8 text-center text-xs text-gray-500">
-        <p>Data refreshes every block • Gas prices may affect bribe execution</p>
-      </div>
+
+      {/* Recent Activity Preview */}
+      {dashboardData && (
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Recent Commitments */}
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              🔥 Latest Commitments
+            </h3>
+            <div className="space-y-3">
+              {dashboardData.recentCommitments?.slice(0, 5).map((commitment) => (
+                <div 
+                  key={commitment.id}
+                  className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm text-gray-300">
+                        <span className="text-blue-400 font-mono text-xs">
+                          {getDisplayName(commitment.hacker, commitment.ensPseudonym)}
+                        </span>
+                        {' committed to '}
+                        <span className="text-primary font-medium">
+                          {commitment.bountyCount} bounties
+                        </span>
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {commitment.timeAgo}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Bribes */}
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              💰 Latest Bribes
+            </h3>
+            <div className="space-y-3">
+              {dashboardData.recentBribes?.slice(0, 5).map((bribe) => (
+                <div 
+                  key={bribe.id}
+                  className="p-3 bg-gray-medium/30 rounded-lg border border-gray-light/20"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm text-gray-300">
+                        <span className="text-blue-400 font-mono text-xs">
+                          {shortenAddress(bribe.briber)}
+                        </span>
+                        {' → '}
+                        <span className="text-green-400 font-mono text-xs">
+                          {shortenAddress(bribe.hacker)}
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {formatEthAmount(bribe.amountWei, 3)}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {bribe.timeAgo}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
