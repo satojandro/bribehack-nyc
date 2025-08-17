@@ -1,0 +1,67 @@
+type Commitment @entity(immutable: true) {
+  id: ID!
+  hacker: Bytes!
+  bountyIds: [String!]!
+  ensPseudonym: String
+  ipfsHash: String
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+}
+
+type Bounty @entity(immutable: false) {
+  id: ID!
+  bountyId: String!
+  prizePool: BigInt!
+  sponsors: [Sponsor!]! @derivedFrom(field: "bounty")
+  totalSponsors: Int!
+  commitments: [Commitment!]!
+  bribes: [Bribe!]! @derivedFrom(field: "bounty")
+  lastUpdated: BigInt!
+}
+
+type Sponsor @entity(immutable: true) {
+  id: ID!
+  sponsor: Bytes!
+  bounty: Bounty!
+  amount: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Bribe @entity(immutable: true) {
+  id: ID!
+  briber: Bytes!
+  hacker: Bytes!
+  bounty: Bounty!
+  bountyId: String!
+  amount: BigInt!
+  message: String
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  status: String! # pending, accepted, rejected
+}
+
+type Hacker @entity(immutable: false) {
+  id: ID!
+  address: Bytes!
+  commitments: [Commitment!]!
+  bribesReceived: [Bribe!]!
+  totalBribesReceived: BigInt!
+  bountyIds: [String!]!
+  ensPseudonym: String
+  ipfsHash: String
+  lastActive: BigInt!
+}
+
+type GlobalStats @entity(immutable: false) {
+  id: ID!
+  totalCommitments: Int!
+  totalBribes: Int!
+  totalBribeVolume: BigInt!
+  totalSponsors: Int!
+  totalSponsorVolume: BigInt!
+  totalHackers: Int!
+  lastUpdated: BigInt!
+}

@@ -1,0 +1,22 @@
+{
+  "name": "bribehack-subgraph",
+  "version": "1.0.0",
+  "description": "The Graph subgraph for Bribehack - tracking commitments, bribes, and bounty sponsorships",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy bribehack-subgraph",
+    "deploy:sepolia": "graph deploy --product hosted-service bribehack/bribehack-sepolia",
+    "create-local": "graph create --node http://localhost:8020/ bribehack/bribehack-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ bribehack/bribehack-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bribehack/bribehack-subgraph",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-ts": "0.31.0"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "0.60.0",
+    "matchstick-as": "0.5.0"
+  }
+}
